@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<lots>
+    <lot-line type="fields" name="id">
+        <code type="field" name="default_code"/>
+        <product type="field" name="name"/>
+        <price type="field" name="value"/>
+        <ean13 type="field" name="default_code"/>
+    </lot-line>
+</lots>

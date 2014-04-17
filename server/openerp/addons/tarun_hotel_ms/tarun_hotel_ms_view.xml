@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+<!-- Menu Related Info -->
+        <menuitem name="Asylum Seekers Center"
+            id="base.menu_tarun_hms_root"
+            sequence="60"/>
+
+       <menuitem id="menu_tarun_hms_management" name="Booking"
+            parent="base.menu_tarun_hms_root" sequence="1" />
+
+
+       <menuitem id="menu_tarun_hms_activities" name="Activities"
+            parent="base.menu_tarun_hms_root" sequence="5" />
+            
+       <menuitem id="menu_tarun_guests_management" name="Guests"
+            parent="base.menu_tarun_hms_root" sequence="10" />
+
+        <menuitem id="menu_tarun_hms_config" name="Configuration"
+            parent="base.menu_tarun_hms_root" sequence="100"/>
+            
+
+       
+
+<!-- bed lines -->
+    <record id="view_tarun_hotel_room_bed_tree" model="ir.ui.view">
+        <field name="name">tarun.hotel.room.bed.tree</field>
+        <field name="model">tarun.hotel.room.bed</field>
+        <field name="arch" type="xml">
+            <tree string="Beds">
+                <field name="name"/>
+                <field name="bed_qty"/>
+            </tree>
+        </field>
+    </record>
+    
+        <record id="view_tarun_hotel_room_form" model="ir.ui.view">
+            <field name="name">tarun.hotel.room.bed.form.view</field>
+            <field name="model">tarun.hotel.room.bed</field>
+            <field name="arch" type="xml">
+                <form string="Beds" version="7.0">
+                    <group col="4">
+		                <field name="name"/>
+		                <field name="bed_qty"/>  
+		                <field name="room_id"/>    
+                    </group> 
+                </form>
+            </field>
+        </record>
+
+
+    <record id="action_tarun_hotel_room_bed" model="ir.actions.act_window">
+        <field name="name">Rooms</field>
+        <field name="res_model">tarun.hotel.room.bed</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id"  eval="False"/>
+        <field name="context">{}</field>
+        <field name="help">Create new Room.</field>
+    </record>
+    
+    
+
+
+
+    
+<!--Beds Related info-->
+    <record id="view_tarun_hotel_bed_tree" model="ir.ui.view">
+        <field name="name">tarun.hotel.bed.tree</field>
+        <field name="model">tarun.hotel.bed</field>
+        <field name="arch" type="xml">
+            <tree string="Beds">
+                <field name="name"/>
+		                <field name="total_stock"/>
+		                <field name="available_stock"/> 
+		                <field name="used_stock"/>         
+            </tree>
+        </field>
+    </record>
+    
+        <record id="view_tarun_hotel_bed_form" model="ir.ui.view">
+            <field name="name">tarun.hotel.bed.form.view</field>
+            <field name="model">tarun.hotel.bed</field>
+            <field name="arch" type="xml">
+                <form string="Beds" version="7.0">
+                    <group col="4">
+		                <field name="name"/>
+		                <field name="value"/>            
+                    </group> 
+                    <group col="4">
+		                <field name="total_stock"/>
+		                <field name="available_stock"/> 
+		                <field name="used_stock"/>            
+                    </group> 
+                </form>
+            </field>
+        </record>
+
+
+    <record id="action_tarun_hotel_bed" model="ir.actions.act_window">
+        <field name="name">Beds</field>
+        <field name="res_model">tarun.hotel.bed</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id"  eval="False"/>
+        <field name="context">{}</field>
+        <field name="help">Create new beds.</field>
+    </record>
+    
+    
+    <menuitem action="action_tarun_hotel_bed"
+        id="menu_action_tarun_hotel_bed"
+        parent="tarun_hotel_ms.menu_tarun_hms_config" sequence="20"/>
+
+
+
+    
+<!--Room Type Related info-->
+    <record id="view_tarun_hotel_room_type_tree" model="ir.ui.view">
+        <field name="name">tarun.hotel.room.type.tree</field>
+        <field name="model">tarun.hotel.room.type</field>
+        <field name="arch" type="xml">
+            <tree string="Room Type">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    
+        <record id="view_tarun_hotel_room_type_form" model="ir.ui.view">
+            <field name="name">tarun.hotel.room.type.form.view</field>
+            <field name="model">tarun.hotel.room.type</field>
+            <field name="arch" type="xml">
+                <form string="Room Type" version="7.0">
+                    <group col="4">
+		                <field name="name"/>          
+                    </group> 
+                </form>
+            </field>
+        </record>
+
+
+    <record id="action_tarun_hotel_room_type" model="ir.actions.act_window">
+        <field name="name">Room Type</field>
+        <field name="res_model">tarun.hotel.room.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id"  eval="False"/>
+        <field name="context">{}</field>
+        <field name="help">Create new Room Type.</field>
+    </record>
+    
+    
+    <menuitem action="action_tarun_hotel_room_type"
+        id="menu_action_tarun_hotel_room_type"
+        parent="tarun_hotel_ms.menu_tarun_hms_config" sequence="20"/>
+
+    
+<!--Rooms Related info-->
+
+
+        <record id="view_tarun_hotel_room_filter" model="ir.ui.view">
+            <field name="name">tarun.hotel.room.select</field>
+            <field name="model">tarun.hotel.room</field>
+            <field name="arch" type="xml">
+                <search string="Search Room Number">
+                    <field name="name" string="Room No."/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Room Type" icon="terp-personal" domain="[]" context="{'group_by':'type_id'}"/>
+                    </group>
+               </search>
+            </field>
+        </record>
+
+
+    <record id="view_tarun_hotel_room_tree" model="ir.ui.view">
+        <field name="name">tarun.hotel.room.tree</field>
+        <field name="model">tarun.hotel.room</field>
+        <field name="arch" type="xml">
+            <tree string="Room" colors="green:available==True;red:available==False">
+		         <field name="type_id"/>   
+                <field name="name"/>
+                <field name="total_spaces"/>
+		        <field name="total_baby_spaces"/> 
+		        <field name="total_occupancy"/>
+		        <field name="occupancy_rate"/>   
+		        <field name="available"/> 
+		        <button type="action" name="%(tarun_hotel_ms.action_change_bed_qty)d"
+                                    string="[(+) ADD BED]"
+                                    icon="STOCK_ADD"/> 
+		        <button type="action" name="%(tarun_hotel_ms.action_reduce_bed_qty)d"
+                                    string="[(-) REMOVE BED]"
+                                    icon="STOCK_DELETE"/> 
+            </tree>
+        </field>
+    </record>
+    
+        <record id="view_tarun_hotel_room_form" model="ir.ui.view">
+            <field name="name">tarun.hotel.room.form.view</field>
+            <field name="model">tarun.hotel.room</field>
+            <field name="arch" type="xml">
+                <form string="Beds" version="7.0">   
+                 <sheet>
+                   <group string = "ROOM">
+                         <group>
+		                <field name="name"/>
+		                <field name="type_id"/>   
+		                <field name="total_spaces"/> 
+		                <field name="total_occupancy"/>
+		                <field name="occupancy_rate"/>   
+		                <field name="available"/> 
+                         </group>
+                         <group> 
+                         		<button type="action"
+                                    icon="terp-accessories-archiver+"
+                                    name="%(tarun_hotel_ms.action_change_bed_qty)d"
+                                    string="(+) ADD BED"/> 
+                                <button type="action"
+                                    icon="terp-accessories-archiver+"
+                                    name="%(tarun_hotel_ms.action_reduce_bed_qty)d"
+                                    string="(-) REMOVE BED"/> 
+                         </group>   
+                    </group> 
+        			 <group col="4" string="Baby Beds">
+		                <field name="total_baby_spaces"/>      
+                    </group>    
+                    <notebook>
+                        <page string="Active Reservations">
+		                <field name="cur_order" readonly="1">
+                                </field>
+                        </page>
+                        <page string="Beds">
+		                <field name="bed_lines" readonly="1">
+                                    <tree string="Beds">
+		                         		 <field name="name"/>
+		                          		 <field name="bed_qty"/>     
+                                    </tree>
+                                </field>
+                        </page>
+                    </notebook>
+                 </sheet>
+                </form>
+            </field>
+        </record>
+
+
+
+                        
+
+    <record id="action_tarun_hotel_room" model="ir.actions.act_window">
+        <field name="name">Rooms</field>
+        <field name="res_model">tarun.hotel.room</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id"  ref="view_tarun_hotel_room_filter"/>
+        <field name="context">{}</field>
+        <field name="help">Create new Room.</field>
+    </record>
+    
+    
+    <menuitem action="action_tarun_hotel_room"
+        id="menu_action_tarun_hotel_room"
+        parent="tarun_hotel_ms.menu_tarun_hms_config" sequence="21"/>
+
+
+    
+<!--Occ Related info-->
+    <record id="view_tarun_hotel_occ_tree" model="ir.ui.view">
+        <field name="name">tarun.hotel.occ.tree</field>
+        <field name="model">tarun.hotel.occ</field>
+        <field name="arch" type="xml">
+            <tree string="Current Occupancy">
+                <field name="name"/>
+                <field name="total_spaces"/>
+		        <field name="total_baby_spaces"/> 
+		        <field name="total_occupancy"/>
+		        <field name="occupancy_rate"/>   
+		        <field name="occupancy_lost"/>   
+            </tree>
+        </field>
+    </record>
+    
+
+
+                        
+
+    <record id="action_tarun_hotel_occ" model="ir.actions.act_window">
+        <field name="name">Current Occupancy</field>
+        <field name="res_model">tarun.hotel.occ</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id"  eval="False"/>
+        <field name="context">{}</field>
+        <field name="help"></field>
+    </record>
+    
+    
+    <menuitem action="action_tarun_hotel_occ"
+        id="menu_action_tarun_hotel_occ"
+        parent="tarun_hotel_ms.menu_tarun_hms_config" sequence="21"/>
+    
+<!--Guest Type Related info-->
+    <record id="view_tarun_hotel_guest_type_tree" model="ir.ui.view">
+        <field name="name">tarun.hotel.guest.type.tree</field>
+        <field name="model">tarun.hotel.guest.type</field>
+        <field name="arch" type="xml">
+            <tree string="Guest Type">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    
+        <record id="view_tarun_hotel_guest_type_form" model="ir.ui.view">
+            <field name="name">tarun.hotel.guest.type.form.view</field>
+            <field name="model">tarun.hotel.guest.type</field>
+            <field name="arch" type="xml">
+                <form string="Guest Type" version="7.0">
+                    <group col="4">
+		                <field name="name"/>          
+                    </group> 
+                </form>
+            </field>
+        </record>
+
+
+    <record id="action_tarun_hotel_guest_type" model="ir.actions.act_window">
+        <field name="name">Guest Type</field>
+        <field name="res_model">tarun.hotel.guest.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id"  eval="False"/>
+        <field name="context">{}</field>
+        <field name="help">Create new guest Type.</field>
+    </record>
+    
+    
+    <menuitem action="action_tarun_hotel_guest_type"
+        id="menu_action_tarun_hotel_guest_type"
+        parent="tarun_hotel_ms.menu_tarun_hms_config" sequence="20"/>
+
+    
+<!--Booking Order info-->
+
+
+        <record id="view_tarun_hotel_book_order_filter" model="ir.ui.view">
+            <field name="name">tarun.hotel.book.order.select</field>
+            <field name="model">tarun.hotel.book.order</field>
+            <field name="arch" type="xml">
+                <search string="Search Booking Order">
+                    <field name="name" string="Name/Ref"/>
+                    <field name="check_in_date_view"/>
+                    <separator/>
+                    <filter icon="terp-check" string="Check-in" domain="[('state','=','cin')]"/>
+                    <filter icon="terp-dolar_ok!" string="Check-out" domain="[('state','=','cout')]" help="Booking Order done"/>
+                    <separator/>
+                    <filter string="My Booking Orders" domain="[('user_id','=',uid)]" help="My Booking Orders" icon="terp-personal" name="my_booking_orders_filter"/>
+                    <field name="user_id"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Salesperson" icon="terp-personal" domain="[]" context="{'group_by':'user_id'}"/>
+                        <filter string="Room" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'room_id_view'}"/>
+                        <filter string="Guest Type" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'guest_type'}"/>
+                        <filter string="Gender" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'gender'}"/>
+                        <filter string="Status" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="Check-in Date" icon="terp-go-month" domain="[]" context="{'group_by':'check_in_date_view'}"/>
+                    </group>
+               </search>
+            </field>
+        </record>
+
+
+    <record id="view_tarun_hotel_book_order_tree" model="ir.ui.view">
+        <field name="name">tarun.hotel.book.order.tree</field>
+        <field name="model">tarun.hotel.book.order</field>
+        <field name="arch" type="xml">
+                <tree string="Book Orders" colors="grey:state=='cout';blue:state=='cin'">
+                    <field name="room_id_view" invisible="1"/>
+                    <field name="guest_type"/>
+                    <field name="guest_ref"/>
+                    <field name="last_name"/>
+                    <field name="first_name"/>
+                    <field name="gender"/>
+                    <field name="country_id"/>
+                    <field name="check_in_date_view"/>
+                    <field name="user_id" invisible="1"/>
+                    <field name="guest_id" invisible="1"/>
+                    <field name="state"/>
+                    <button type="action"
+                                    name="%(tarun_hotel_ms.action_tarun_cout_guest)d"
+                                    string="[Check Out]"  attrs="{'invisible': [('state','not in',('cin'))]}" icon="gtk-go-forward"  class="oe_highlight"/>    
+                    <button type="action"
+                                    name="%(tarun_hotel_ms.action_tarun_transfer_guest)d"
+                                    string="[Transfer]"  attrs="{'invisible': [('state','not in',('cin'))]}" icon="terp-crm"/> 
+                </tree>
+        </field>
+    </record>
+    
+        <record id="view_tarun_hotel_book_order_form" model="ir.ui.view">
+            <field name="name">tarun.hotel.book.order.form.view</field>
+            <field name="model">tarun.hotel.book.order</field>
+            <field name="arch" type="xml">
+                <form string="Booking Order" version="7.0">
+                    <header>
+                    	<button type="action"
+                                    name="%(tarun_hotel_ms.action_tarun_cout_guest)d"
+                                    string="Check Out"  attrs="{'invisible': [('state','not in',('cin'))]}"  class="oe_highlight"/> 
+                       <button type="action"
+                                    name="%(tarun_hotel_ms.action_tarun_transfer_guest)d"
+                                    string="Transfer"  attrs="{'invisible': [('state','not in',('cin'))]}"/> 
+                       <field name="state" widget="statusbar" statusbar_visible="cin,cout" statusbar_colors='{"cin":"green","cout":"red"}'/>
+                	</header>
+                <sheet>
+                    <h1>
+                        <label string="Guest Ref. "/>
+                        <field name="guest_ref" class="oe_inline" placeholder="88-A"/>
+                    </h1>
+                    <group>
+                        <group>
+                            <field name="guest_id" on_change="onchange_partner_id(guest_id, context)" options='{"always_reload": True}' invisible="1"/>                            
+                            <field name="last_name"/>
+                            <field name="first_name"/>
+                            <field name="gender" required="1" on_change="gender_change(gender,context)"/>
+                            <field name="guest_type" required="1" widget="selection" on_change="guest_type_change(gender,guest_type,context)" options="{&quot;always_reload&quot;: True}"/>
+                            <field name="country_id" required="1"/>
+                            <field name="room_id" required="1" on_change="onchange_room_id(room_id, context)" options="{&quot;always_reload&quot;: True}"/>
+                           </group>
+                        <group>
+                            <field name="check_in_date" invisible="1"/>
+                            <field name="check_in_date_view"/>
+                            <field name="check_out_date_view" attrs="{'invisible': [('state','in',('cin'))]}"/>
+                            <field name="check_out_date" invisible="1"/>
+                            <field name="user_id"/>
+                        </group>
+                    </group>                    
+                </sheet>
+                </form>
+            </field>
+        </record>
+        
+
+
+
+    <record id="action_tarun_hotel_book_order" model="ir.actions.act_window">
+        <field name="name">All Booking Orders</field>
+        <field name="res_model">tarun.hotel.book.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id"  ref="view_tarun_hotel_book_order_filter"/>
+        <field name="context">{}</field>
+        <field name="help">Create new Booking Order.</field>
+    </record>
+    
+    
+    <menuitem action="action_tarun_hotel_book_order"
+        id="menu_action_tarun_hotel_book_order"
+        parent="tarun_hotel_ms.menu_tarun_hms_management" sequence="20"/>
+      
+
+    <record id="action_tarun_hotel_book_order2" model="ir.actions.act_window">
+        <field name="name">New Booking Order</field>
+        <field name="res_model">tarun.hotel.book.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="search_view_id"  eval="False"/>
+        <field name="context">{}</field>
+        <field name="help">Create new Booking Order.</field>
+    </record>
+    
+    
+    <menuitem action="action_tarun_hotel_book_order2"
+        id="menu_action_tarun_hotel_book_order2"
+        parent="tarun_hotel_ms.menu_tarun_hms_management" sequence="1"/>
+
+
+
+
+    </data>
+</openerp>
+

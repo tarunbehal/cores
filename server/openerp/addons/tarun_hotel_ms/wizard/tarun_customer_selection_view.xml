@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        
+        <!-- CSV Report-->
+        
+        <record id="view_tarun_customer_selection_wizard" model="ir.ui.view">
+            <field name="name">Cashier System</field>
+            <field name="model">tarun.customer.selection</field>
+            <field name="arch" type="xml">
+<form string="Cashier System" version="7.0">
+                      <group>
+                      <group>
+                        <field name="user_id"/>
+                       </group>
+                      <group>
+                        <field name="guest_id" readonly="1"/><p><i> Click on customer name to view customer details </i></p>
+                       </group>
+                       </group>
+                        <separator string="Scan Guest Code or Enter Guest Ref" colspan="4"/>
+
+                      <group>
+                      <group>
+                        <h2><field name="b_code" default_focus="1" on_change="code_change(b_code,context)"/></h2>
+                       </group>
+                      <group><div><p><b></b></p></div>
+                       </group>
+                       </group>
+                    <footer>
+                        <button name="confirm_cashier_window" string=" OK ? " colspan="2" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_tarun_customer_selection" model="ir.actions.act_window">
+            <field name="name">Cashier System</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tarun.customer.selection</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+       
+<!--wizard menu-->
+
+    <menuitem action="action_tarun_customer_selection"
+        id="menu_action_tarun_customer_selection"
+        parent="tarun_hotel_ms.menu_tarun_products_management" sequence="24"/>       
+
+    </data>
+</openerp> 

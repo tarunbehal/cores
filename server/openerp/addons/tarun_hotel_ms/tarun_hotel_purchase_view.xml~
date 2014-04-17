@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+
+
+
+<!--purchase order menu-->
+
+
+       <menuitem id="menu_tarun_purchase_management" name="Cashier System"
+            parent="base.menu_tarun_hms_root" sequence="1" />
+
+        <record id="tarun_hotel_purchase_lines_tree" model="ir.ui.view">
+            <field name="name">tarun.hotel.purchase.lines.tree</field>
+            <field name="model">tarun.hotel.purchase.lines</field>
+            <field name="arch" type="xml">
+                <tree string="Purchase Order Lines">
+                    <field name="product_id"/>
+                    <field name="qty"/>
+		            <field name="pts_unit"/>
+		            <field name="pts"/>
+                </tree>
+            </field>
+        </record>
+        <record id="tarun_hotel_purchase_lines_form" model="ir.ui.view">
+            <field name="name">tarun.hotel.purchase.lines.form</field>
+            <field name="model">tarun.hotel.purchase.lines</field>
+            <field name="arch" type="xml">
+                <form string="Purchase Order Lines" version="7.0">
+                    <group col="4">
+                    <field name="product_id"/>
+                    <field name="qty"/>
+		            <field name="pts_unit"/>
+		            <field name="pts"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="tarun_hotel_purchase_tree" model="ir.ui.view">
+            <field name="name">tarun.hotel.purchase.tree</field>
+            <field name="model">tarun.hotel.purchase</field>
+            <field name="arch" type="xml">
+                <tree string="Purchase Order" colors="grey:state == 'cancel'">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tarun_hotel_purchase_form" model="ir.ui.view">
+            <field name="name">tarun.hotel.purchase.form</field>
+            <field name="model">tarun.hotel.purchase</field>
+            <field name="arch" type="xml">
+<form string="Purchase Order" version="7.0">
+                <header>
+                    <!--<button name="button_cancel" states="draft" string="Cancel" type="object"/>-->
+                    <field name="state" widget="statusbar" statusbar_visible="draft,bill,done"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="guest_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="date" readonly="1"/>
+                            <field name="user_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                    <page string="General Information">
+                        <field name="inv_lines">
+                            <tree string="Products" editable="bottom">
+                                <field name="product_id" on_change="onchange_product_id(product_id, qty, context)"/>
+                                <field name="qty" on_change="onchange_product_id(product_id, qty, context)"/>
+                                <field name="pts_unit"/>
+                                <field name="pts"/>
+                            </tree>
+                            <form string="Products" version="7.0">
+                                <group>
+				                    <field name="product_id" on_change="onchange_product_id(product_id, qty, context)"/>
+				                    <field name="qty" on_change="onchange_product_id(product_id, qty, context)"/>
+	                                <field name="pts_unit"/>
+	                                <field name="pts"/>
+                                </group>
+                            </form>
+                        </field>  
+                            <group>
+                            <group  col="6" string="Total 'n Balance">
+                        <field name="total" attrs="{'invisible': [('state','in',('done'))]}"/>
+                        <field name="total_final" attrs="{'invisible': [('state','not in',('done'))]}" readonly="1"/>
+                        <field name="balance" attrs="{'invisible': [('state','in',('done'))]}"/>
+                        <field name="balance_final" attrs="{'invisible': [('state','not in',('done'))]}" readonly="1"/>
+                            </group>
+                            <group>
+                    <button name="button_update" states="draft" string="Update Bill" type="object"/>
+                    <button name="button_go_bill" states="draft" string="Finish Billing" type="object" class="oe_highlight"/>
+                    <button name="button_back_bill" states="bill" string="Back" type="object"/>
+                    <button name="button_done_bill" states="bill" string="Charge and Print Ticket" type="object" class="oe_highlight"/> 
+                    <!--<button type="action" name="%(tarun_hotel_ms.action_tarun_customer_selection)d" string="Return to Cashier Page" attrs="{'invisible': [('state','not in',('done'))]}"/>-->
+                            </group>
+                            </group>
+                    </page>
+                    </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_tarun_hotel_purchase_form" model="ir.actions.act_window">
+            <field name="name">Purchase Order</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tarun.hotel.purchase</field>
+            <field name="view_type">form</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Purchase Order. 
+              </p><p>
+                Purchase Orders to sell products.
+              </p>
+            </field>
+        </record>
+        <menuitem action="action_tarun_hotel_purchase_form" id="menu_action_tarun_hotel_purchase_form" parent="tarun_hotel_ms.menu_tarun_purchase_management" sequence="30"/>
+
+
+
+
+
+<!--Stock Stats menu-->
+
+        <record id="tarun_hotel_stock_stats_lines_tree" model="ir.ui.view">
+            <field name="name">tarun.hotel.stock.stats.lines.tree</field>
+            <field name="model">tarun.hotel.stock.stats.lines</field>
+            <field name="arch" type="xml">
+                <tree string="Stock Statistics Order Lines">
+                    <field name="product_id"/>
+		            <field name="points"/>
+                    <field name="serving"/>
+                    <field name="serving_start"/>
+		            <field name="serving_end"/>
+                    <field name="serving_in"/>
+                </tree>
+            </field>
+        </record>
+        <record id="tarun_hotel_stock_stats_lines_form" model="ir.ui.view">
+            <field name="name">tarun.hotel.stock.stats.lines.form</field>
+            <field name="model">tarun.hotel.stock.stats.lines</field>
+            <field name="arch" type="xml">
+                <form string="Stock Statistics Order Lines" version="7.0">
+                    <group col="4">
+	                    <field name="product_id"/>
+			            <field name="points"/>
+	                    <field name="serving"/>
+	                    <field name="serving_start"/>
+			            <field name="serving_end"/>
+	                    <field name="serving_in"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="tarun_hotel_stock_stats_tree" model="ir.ui.view">
+            <field name="name">tarun.hotel.stock.stats.tree</field>
+            <field name="model">tarun.hotel.stock.stats</field>
+            <field name="arch" type="xml">
+                <tree string="Stock Statistics Order">
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="total"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tarun_hotel_stock_stats_form" model="ir.ui.view">
+            <field name="name">tarun.hotel.stock.stats.form</field>
+            <field name="model">tarun.hotel.stock.stats</field>
+            <field name="arch" type="xml">
+				<form string="Stock Statistics" version="7.0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date_start"/>
+                        </group>
+                        <group>
+                            <field name="date_end"/>
+                        </group>
+                    </group>
+                    <button name="button_gen_stats" string="Update Statistics" type="object" class="oe_highlight"/>
+                    <notebook>
+                    <page string="Stock Statistics">
+                        <field name="stat_lines">
+                            <tree string="Stock Statistics" editable="bottom">
+			                    <field name="product_id"/>
+					            <field name="points"/>
+			                    <field name="serving"/>
+			                    <field name="serving_start"/>
+					            <field name="serving_end"/>
+			                    <field name="serving_in"/>
+                            </tree>
+                            <form string="Products" version="7.0">
+                                <group>
+				                    <field name="product_id"/>
+						            <field name="points"/>
+				                    <field name="serving"/>
+				                    <field name="serving_start"/>
+						            <field name="serving_end"/>
+				                    <field name="serving_in"/>
+                                </group>
+                            </form>
+                        </field>  
+                            <group>
+                        		<field name="total" readonly="1"/>
+                            </group>
+                    </page>
+                    </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_tarun_hotel_stock_stats_form" model="ir.actions.act_window">
+            <field name="name">Stock Statistics</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tarun.hotel.stock.stats</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Stock Statistics. 
+              </p><p>
+                Stock Statistics.
+              </p>
+            </field>
+        </record>
+        <menuitem action="action_tarun_hotel_stock_stats_form" id="menu_action_tarun_hotel_stock_stats_form" parent="tarun_hotel_ms.menu_tarun_purchase_management" sequence="30"/>
+
+
+
+
+
+    </data>
+</openerp>
+

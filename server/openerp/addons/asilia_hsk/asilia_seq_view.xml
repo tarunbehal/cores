@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <!-- Sequences for hotel booking -->
+        <record id="seq_type_asilia_hotel_book_order" model="ir.sequence.type">
+            <field name="name">Asilia Book Order</field>
+            <field name="code">asilia.hotel.book.order</field>
+        </record>
+
+        <record id="seq_asilia_hotel_book_order" model="ir.sequence">
+            <field name="name">HMS Book Order</field>
+            <field name="code">asilia.hotel.book.order</field>
+            <field name="prefix">BKN</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</openerp>

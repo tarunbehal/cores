@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        
+        
+        <record id="view_schedule_cleanup_wizard" model="ir.ui.view">
+            <field name="name">Schedule Cleanup</field>
+            <field name="model">schedule.cleanup</field>
+            <field name="arch" type="xml">
+                <form string="Schedule Cleanup" version="7.0">
+                        <separator string="Schedule Cleaning" colspan="4"/>
+                      <group string="Select Hotel and click on Approve">
+                        <field name="hotel_id"/>
+                       </group>
+                    <footer>
+                        <button name="start_schedule" string="Approve"
+                            colspan="1" type="object" class="oe_highlight"  />
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />    
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_schedule_cleanup" model="ir.actions.act_window">
+            <field name="name">Schedule Cleanup</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">schedule.cleanup</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>            
+        </record>
+
+
+    <menuitem action="action_schedule_cleanup"
+        id="menu_action_schedule_cleanup"
+        parent="asilia_hsk.menu_asilia_hms_room" sequence="10"/>        
+
+    </data>
+</openerp>    

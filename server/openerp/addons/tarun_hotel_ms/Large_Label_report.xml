@@ -1,0 +1,16 @@
+<?xml version="1.0"?> 
+<openerp> 
+        <data> 
+                <report 
+                        id="report_tarun_purchase_order_l"
+			string="Print Ticket"
+			model="tarun.hotel.purchase"
+			name="tarun.hotel.purchase"
+			rml="tarun_hotel_ms/report/Large_Label.rml"
+			auto="False"
+			header="False"/>
+
+	        <report id="report_tarun_product_label" model="tarun.hotel.product" name="tarun.hotel.product.label" string="Product Labels" xml="tarun_hotel_ms/report/tarun_product_label.xml" xsl="tarun_hotel_ms/report/tarun_product_label.xsl"/>
+	        
+        </data> 
+</openerp>

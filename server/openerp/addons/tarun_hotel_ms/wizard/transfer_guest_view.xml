@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        
+        <!--  Transfer Guest -->
+        
+        <record id="view_tarun_transfer_guest_wizard" model="ir.ui.view">
+            <field name="name">Change Bed Qty</field>
+            <field name="model">tarun.transfer.guest</field>
+            <field name="arch" type="xml">
+                <form string="Transfer Guest" version="7.0">
+                    <group>
+                        <separator string="Room No." colspan="4"/>
+                        <field name="room_id" colspan="4"/>
+                    </group>
+                    <footer>
+                        <button name="transfer_guest" string="Approve"
+                            colspan="1" type="object" class="oe_highlight" confirm="Are you sure?" />
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />    
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_tarun_transfer_guest" model="ir.actions.act_window">
+            <field name="name">Transfer Guest</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tarun.transfer.guest</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>            
+        </record>
+       
+       
+    </data>
+</openerp>    

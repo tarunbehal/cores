@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <!-- Sequences for office booking -->
+        <record id="seq_type_cores_book_order" model="ir.sequence.type">
+            <field name="name">Cores Book Order</field>
+            <field name="code">cores.book.order</field>
+        </record>
+
+        <record id="seq_cores_book_order" model="ir.sequence">
+            <field name="name">Cores Book Order</field>
+            <field name="code">cores.book.order</field>
+            <field name="prefix">BO</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+    </data>
+</openerp>

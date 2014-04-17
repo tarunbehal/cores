@@ -1,0 +1,289 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+from openerp.osv import fields, osv
+import time
+import openerp.addons.decimal_precision as dp
+
+class mrp_product_produce(osv.osv_memory):
+    _name = "mrp.product.produce"
+    _description = "Product Produce"
+    
+    
+
+    _columns = {
+        'product_qty': fields.float('Select Quantity of Sleeves in Gaylord or Cases in Skid', digits_compute=dp.get_precision('Product Unit of Measure'), required=True),
+        'qty_last': fields.float('Quantity last used', digits_compute=dp.get_precision('Product Unit of Measure')),
+        'qty_remaining': fields.float('Quantity Remaining', digits_compute=dp.get_precision('Product Unit of Measure')),
+        'raw_material_serial': fields.text('Raw-materials & Serial Number', help="Serial Number for raw-material batch ."),
+        'mo_ref': fields.char('Order Ref.', size=64),
+        'product_name': fields.char('Product Name', size=64),
+        'product_id': fields.many2one('product.product', 'Product'),
+        'uom_name': fields.char('UOM Name', size=64),
+        'machine_name': fields.char('Machine Name', size=64),
+        'date': fields.datetime('Date'),
+        'serial': fields.char('Serial Number', size=64),
+        'location_dest': fields.char('Dest Location', size=64),
+        'mode': fields.selection([('consume_produce', 'Consume & Produce'),
+                                  ('consume', 'Consume Only')], 'Mode', required=True,
+                                  help="'Consume only' mode will only consume the products with the quantity selected.\n"
+                                        "'Consume & Produce' mode will consume as well as produce the products with the quantity selected "
+                                        "and it will finish the production order when total ordered quantities are produced."),
+    }
+
+                 
+    
+    # Functionality Updated by Tarun Behal for picking the most recent quantity
+    def _get_product_qty(self, cr, uid, context=None):
+        """
+         To obtain product quantity
+        @param self: The object pointer.
+        @param cr: A database cursor
+        @param uid: ID of the user currently logged in
+        @param context: A standard dictionary
+        @return: Quantity
+        """
+        if context is None:
+            context = {}
+        prod = self.pool.get('mrp.production').browse(cr, uid,
+                                context['active_id'], context=context)
+        done = 0.0
+        recent = 0.0
+        for move in prod.move_created_ids2:
+            if move.product_id == prod.product_id:
+                if not move.scrapped:
+                    done += move.product_qty
+                    recent = move.product_qty
+                
+        if (prod.product_qty - done) > recent :
+            return recent
+        else :
+            return (prod.product_qty - done) or prod.product_qty
+            
+        return (prod.product_qty - done) or prod.product_qty
+    
+    
+    def _get_qty_last(self, cr, uid, context=None):
+        """
+         To obtain product quantity
+        @param self: The object pointer.
+        @param cr: A database cursor
+        @param uid: ID of the user currently logged in
+        @param context: A standard dictionary
+        @return: Quantity
+        """
+        
+        if context is None:
+            context = {}
+        prod = self.pool.get('mrp.production').browse(cr, uid,
+                                context['active_id'], context=context)
+        done = 0.0
+        recent = 0.0
+        for move in prod.move_created_ids2:
+            if move.product_id == prod.product_id:
+                if not move.scrapped:
+                    done += move.product_qty
+                    recent = move.product_qty           
+        return (prod.product_qty - done) or prod.product_qty    
+    
+    
+    # Functionality by Tarun Behal for fetching the raw-material serial number and storing them in string  of values
+    def _get_raw_serial_number(self, cr, uid, context=None):
+        """ To obtain raw-material serial number
+        @param self: The object pointer.
+        @param cr: A database cursor
+        @param uid: ID of the user currently logged in
+        @param context: A standard dictionary
+        @return: Quantity
+        using product_ids browse serial number in the system and pick it up using FIFO
+        """
+        if context is None:
+            context = {}
+        prod = self.pool.get('mrp.production').browse(cr, uid,
+                                context['active_id'], context=context)
+        active_lot = 0.0
+        active_product = ""
+        active = ""
+        for move in prod.move_lines:
+            active_lot = move.prodlot_id.name
+            active_product = move.product_id.name
+            if active_lot != None:
+                active = active_product + ":" + str(active_lot)+ '\n' + active
+            else:
+                active = active_product + ":" + '\n' + active
+        self.pool.get('mrp.production').write(cr, uid, prod.id, {'raw_material_serial':active}, context=context)
+               
+           
+        return active
+		
+    def _get_product_id(self, cr, uid, context=None):
+                
+
+        if context is None:
+            context = {}
+        prod = self.pool.get('mrp.production').browse(cr, uid,
+                                context['active_id'], context=context)
+        product_id = prod.product_id.id            
+        return product_id or True    
+
+
+    _defaults = {
+         'product_qty': 0,
+         'qty_last': _get_product_qty,
+         'product_id': _get_product_id,
+         'qty_remaining': _get_qty_last,
+         'raw_material_serial': _get_raw_serial_number,
+         'mode': lambda *x: 'consume_produce'
+    }
+
+    def do_produce(self, cr, uid, ids, context=None):
+        production_id = context.get('active_id', False)
+        assert production_id, "Production Id should be specified in context as a Active ID."
+        data = self.browse(cr, uid, ids[0], context=context)
+        self.pool.get('mrp.production').action_produce(cr, uid, production_id,
+                            data.product_qty, data.mode, context=context)
+        return {}
+    
+   
+    def _update_relation(self, cr, uid, product_id, qty, created_lot, assigned_lot, context=None):
+        lot_obj_rel = self.pool.get('stock.production.lot.relation')
+        lot_obj_rel.create(cr,uid,{'tarun_lot_id':created_lot,
+                                                 'product_id':product_id,
+                                                 'qty':qty,
+                                                 'prodlot_id':assigned_lot}, context=context)
+           
+        return True
+
+    
+    
+    # Functionality for Print and Produce Action by Tarun Behal @primary modules
+    def do_produce_print(self, cr, uid, ids, context=None):
+        sm_before = []
+        fifo_sm_before = []
+        fifo_sm_after = []
+        fifo_sm_final_list = []
+        sm_after = []
+        final_sm = []    
+        fifo_final_sm = [] 
+        tarun_mac = ""
+        tarun_serial = ""       
+        date = time.strftime('%Y-%m-%d %H:%M:%S')
+        production_id = context.get('active_id', False)
+        assert production_id, "Production Id should be specified in context as a Active ID."
+        data = self.browse(cr, uid, ids[0], context=context)
+        prod = self.pool.get('mrp.production').browse(cr, uid,
+                                context['active_id'], context=context)
+        for movebefore in prod.move_created_ids2:
+            sm_before.append(movebefore.id)
+            
+        for rawmovebefore in prod.move_lines2:
+            fifo_sm_before.append(rawmovebefore.id)
+        if data.product_qty > prod.product_id.max_qty and prod.product_id.max_qty!=0:
+            raise osv.except_osv(_('Processing Error!'), _('Max quantity allowed for %s is %d!') \
+                                % (prod.product_id.name,prod.product_id.max_qty))
+        
+        self.pool.get('mrp.production').action_produce(cr, uid, production_id,
+                            data.product_qty, data.mode, context=context)
+        if context == None:
+            context = {}   
+        stock_mov_obj = self.pool.get('stock.move')        
+        prod = self.pool.get('mrp.production').browse(cr, uid,
+                                context['active_id'], context=context)
+        
+        lot_id = self.pool.get('stock.production.lot').create(cr, uid, {
+                            'product_id': prod.product_id.id,
+                        }, context=context)
+
+        for move in prod.move_created_ids2: 
+            sm_after.append(move.id)
+            
+            
+        for move in prod.move_lines2:
+            fifo_sm_after.append((move.id,move.product_id.id,move.product_qty,move.product_uom,move.product_id,lot_id,move.location_id))
+                       
+        for sm_ids in sm_after:
+            if sm_ids not in sm_before:
+                final_sm.append(sm_ids)
+                
+        for sm_ids3 in fifo_sm_after:
+            if sm_ids3[0] not in fifo_sm_before:
+                fifo_sm_final_list.append(sm_ids3)
+                
+       
+        for sm_ids2 in fifo_sm_final_list:
+            if sm_ids2[1]==data.raw_id1.id and data.rs_id1:
+                stock_mov_obj.write(cr, uid, sm_ids2[0], {'prodlot_id': data.rs_id1.id}, context=context) 
+                self._update_relation(cr, uid, sm_ids2[1], sm_ids2[2], sm_ids2[5], data.rs_id1.id, context=context)                
+            if sm_ids2[1]==data.raw_id2.id and data.rs_id2:
+                stock_mov_obj.write(cr, uid, sm_ids2[0], {'prodlot_id': data.rs_id2.id}, context=context) 
+                self._update_relation(cr, uid, sm_ids2[1], sm_ids2[2], sm_ids2[5], data.rs_id2.id, context=context)                
+            if sm_ids2[1]==data.raw_id3.id and data.rs_id3:
+                stock_mov_obj.write(cr, uid, sm_ids2[0], {'prodlot_id': data.rs_id3.id}, context=context)                 
+                self._update_relation(cr, uid, sm_ids2[1], sm_ids2[2], sm_ids2[5], data.rs_id3.id, context=context)                
+            if sm_ids2[1]==data.raw_id4.id and data.rs_id4:
+                stock_mov_obj.write(cr, uid, sm_ids2[0], {'prodlot_id': data.rs_id4.id}, context=context) 
+                self._update_relation(cr, uid, sm_ids2[1], sm_ids2[2], sm_ids2[5], data.rs_id4.id, context=context)
+            if sm_ids2[1]==data.raw_id5.id and data.rs_id5:
+                stock_mov_obj.write(cr, uid, sm_ids2[0], {'prodlot_id': data.rs_id5.id}, context=context) 
+                self._update_relation(cr, uid, sm_ids2[1], sm_ids2[2], sm_ids2[5], data.rs_id5.id, context=context)
+            if sm_ids2[1]==data.raw_id6.id and data.rs_id6:
+                stock_mov_obj.write(cr, uid, sm_ids2[0], {'prodlot_id': data.rs_id6.id}, context=context) 
+                self._update_relation(cr, uid, sm_ids2[1], sm_ids2[2], sm_ids2[5], data.rs_id6.id, context=context)
+            if sm_ids2[1]==data.raw_id7.id and data.rs_id7:
+                stock_mov_obj.write(cr, uid, sm_ids2[0], {'prodlot_id': data.rs_id7.id}, context=context) 
+                self._update_relation(cr, uid, sm_ids2[1], sm_ids2[2], sm_ids2[5], data.rs_id7.id, context=context)
+            if sm_ids2[1]==data.raw_id8.id and data.rs_id8:
+                stock_mov_obj.write(cr, uid, sm_ids2[0], {'prodlot_id': data.rs_id8.id}, context=context) 
+                self._update_relation(cr, uid, sm_ids2[1], sm_ids2[2], sm_ids2[5], data.rs_id8.id, context=context)
+            if sm_ids2[1]==data.raw_id9.id and data.rs_id9:
+                stock_mov_obj.write(cr, uid, sm_ids2[0], {'prodlot_id': data.rs_id9.id}, context=context) 
+                self._update_relation(cr, uid, sm_ids2[1], sm_ids2[2], sm_ids2[5], data.rs_id9.id, context=context)
+
+        stock_mov_obj.write(cr, uid, final_sm, {'prodlot_id': lot_id}, context=context) 
+        for mac in prod.workcenter_lines:
+            tarun_mac = mac.workcenter_id.name
+        for move in stock_mov_obj.browse(cr,uid,final_sm):
+            date = move.date 
+            tarun_serial = move.prodlot_id.name   
+        self.write(cr, uid, ids, {'serial':tarun_serial,
+                                  'mo_ref':prod.name,
+                                  'date':date,
+                                  'raw_material_serial':data.raw_material_serial,
+                                  'product_name':prod.product_id.name,
+                                  'uom_name':prod.product_uom.name,
+                                  'machine_name':tarun_mac,
+                                  'location_dest':prod.location_dest_id.complete_name}, context=context)
+        return {
+        'type': 'ir.actions.report.xml', 
+        'report_name':'mrp.product.produce',
+        'datas': {
+                  'model':'mrp.product.produce',
+                  'id': ids and ids[0] or False,
+                  'ids': ids and ids or [],
+                  'report_type': 'pdf'
+                 },
+           'nodestroy': True
+       }
+        return {}
+
+mrp_product_produce()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

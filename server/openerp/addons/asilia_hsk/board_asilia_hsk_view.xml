@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Asilia HSK dashboard -->
+        <record id="action_work_order_man" model="ir.actions.act_window">
+            <field name="name">Rooms to Check</field>
+            <field name="res_model">asilia.hotel.work.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state','=','finish')]</field>
+            <field name="context">{}</field>
+            <field name="view_id" ref="asilia_hsk.view_asilia_hotel_work_order_tree"/>
+        </record>
+        
+        <record id="action_work_order_un_list" model="ir.actions.act_window">
+            <field name="name">Unassigned Work Orders</field>
+            <field name="res_model">asilia.hotel.work.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('user_id','=',None)]</field>
+            <field name="context">{}</field>
+            <field name="view_id" ref="asilia_hsk.view_asilia_hotel_work_order_tree"/>
+        </record>
+        
+
+
+        <record id="board_asilia_hsk_man_form5" model="ir.ui.view">
+            <field name="name">board.asilia.man.form</field>
+            <field name="model">board.board</field>
+            <field name="arch" type="xml">
+                <form string="My Dashboard" version="7.0">
+                    <board style="2-1">
+                        <column>
+                            <action name="%(action_work_order_man)d" string="Rooms to Check"/>
+                            <action name="%(action_work_order_un_list)d" string="Unassigned Work Orders"/>
+                        </column>
+                    </board>
+                </form>
+            </field>
+        </record>
+
+        <record id="open_board_asilia_hsk_dash" model="ir.actions.act_window">
+            <field name="name">Booking Orders</field>
+            <field name="res_model">board.board</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="board_asilia_hsk_man_form5"/>
+        </record>
+
+		<menuitem name="My Dashboard"
+            id="menu_asilia_hms_my_dash11"
+                  parent="asilia_hsk.menu_asilia_hms_my_dash"
+            sequence="1" action="open_board_asilia_hsk_dash"/>
+
+
+    </data>
+</openerp>

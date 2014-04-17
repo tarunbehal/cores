@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+<!-- Menu Related Info -->
+        <menuitem name="Office"
+            id="base.menu_cores_office_ms_root"
+            sequence="60"/>
+
+       <menuitem id="menu_cores_office_ms" name="Booking"
+            parent="base.menu_cores_office_ms_root" sequence="1" />
+
+        <menuitem id="menu_cores_office_ms_config" name="Configuration"
+            parent="base.menu_cores_office_ms_root" sequence="100"/>
+            
+
+<!-- Customer Menu -->
+                  
+    
+    <menuitem action="base.action_partner_form"
+        id="menu_action_cores_customer"
+        parent="cores_booking.menu_cores_office_ms" sequence="51"/>      
+        
+           
+
+<!-- Office Options -->
+    <record id="view_cores_office_options_tree" model="ir.ui.view">
+        <field name="name">cores.office.options.tree</field>
+        <field name="model">cores.office.options</field>
+        <field name="arch" type="xml">
+            <tree string="Additional Options">
+                <field name="name"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+    
+        <record id="view_cores_office_options_form" model="ir.ui.view">
+            <field name="name">cores.office.options.form.view</field>
+            <field name="model">cores.office.options</field>
+            <field name="arch" type="xml">
+                <form string="Additional Options" version="7.0">
+                    <group col="4">
+		                <field name="name"/>
+		                <field name="description"/>  
+                        <field name="office_id"/>    
+                    </group> 
+                </form>
+            </field>
+        </record>
+
+
+    <record id="action_cores_office_options" model="ir.actions.act_window">
+        <field name="name">Additional Options</field>
+        <field name="res_model">cores.office.options</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id"  eval="False"/>
+        <field name="context">{}</field>
+        <field name="help">Create Additional Options.</field>
+    </record>
+    
+
+<!-- Office Pricing -->
+    <record id="view_cores_office_pricing_tree" model="ir.ui.view">
+        <field name="name">cores.office.pricing.tree</field>
+        <field name="model">cores.office.pricing</field>
+        <field name="arch" type="xml">
+            <tree string="Additional Pricing">
+                <field name="name"/>
+                <field name="price"/>
+            </tree>
+        </field>
+    </record>
+    
+        <record id="view_cores_office_pricing_form" model="ir.ui.view">
+            <field name="name">cores.office.pricing.form.view</field>
+            <field name="model">cores.office.pricing</field>
+            <field name="arch" type="xml">
+                <form string="Additional Pricing" version="7.0">
+                    <group col="4">
+                        <field name="name"/>
+                        <field name="price"/>  
+                        <field name="office_id"/>    
+                    </group> 
+                </form>
+            </field>
+        </record>
+
+
+    <record id="action_cores_office_pricing" model="ir.actions.act_window">
+        <field name="name">Additional Pricing</field>
+        <field name="res_model">cores.office.pricing</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id"  eval="False"/>
+        <field name="context">{}</field>
+        <field name="help">Create Additional Pricing.</field>
+    </record>
+
+    
+<!--Rooms Related info-->
+
+
+        <record id="view_cores_office_filter" model="ir.ui.view">
+            <field name="name">cores.office.select</field>
+            <field name="model">cores.office</field>
+            <field name="arch" type="xml">
+                <search string="Search Office#">
+                    <field name="name" string="Office No."/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Office Type" icon="terp-personal" domain="[]" context="{'group_by':'type_id'}"/>
+                    </group>
+               </search>
+            </field>
+        </record>
+
+
+    <record id="view_cores_office_tree" model="ir.ui.view">
+        <field name="name">cores.office.tree</field>
+        <field name="model">cores.office</field>
+        <field name="arch" type="xml">
+            <tree string="Room">
+		         <field name="type_id"/>   
+                <field name="name"/>
+                <field name="workstation_id"/>
+		        <field name="size"/> 
+            </tree>
+        </field>
+    </record>
+    
+        <record id="view_cores_office_form" model="ir.ui.view">
+            <field name="name">cores.office.form.view</field>
+            <field name="model">cores.office</field>
+            <field name="arch" type="xml">
+                <form string="Office" version="7.0">   
+                 <sheet>
+                   <field name="image_medium" widget="image" class="oe_avatar oe_left"/>
+                   <group string = "Office">
+                         <group>
+			                <field name="name"/>
+			                <field name="type_id"/>   
+                         </group>
+                         <group> 
+			                <field name="workstation_id"/> 
+			                <field name="size"/>
+                         </group>   
+                    </group>    
+			                <field name="description"/>
+                    <group>    
+                    </group>   
+                    <notebook>
+                        <page string="Pricing">
+		                <field name="pricing">
+                                    <tree string="Pricing" editable="bottom">
+		                         		 <field name="name"/>
+		                          		 <field name="price"/>     
+                                    </tree>
+                                </field>
+                        </page>
+                        <page string="Additional Options (if any)">
+		                <field name="options">
+                                    <tree string="Additional Options" editable="bottom">
+		                         		 <field name="name"/>
+		                          		 <field name="description"/>     
+                                    </tree>
+                                </field>
+                        </page>
+                    </notebook>
+                 </sheet>
+                </form>
+            </field>
+        </record>
+
+
+
+                        
+
+    <record id="action_cores_office" model="ir.actions.act_window">
+        <field name="name">Office</field>
+        <field name="res_model">cores.office</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id"  ref="view_cores_office_filter"/>
+        <field name="context">{}</field>
+        <field name="help">Create new Office.</field>
+    </record>
+    
+    
+    <menuitem action="action_cores_office"
+        id="menu_action_cores_office"
+        parent="cores_booking.menu_cores_office_ms_config" sequence="21"/>    
+
+    
+<!--Booking Order info-->
+
+
+        <record id="view_cores_book_order_filter" model="ir.ui.view">
+            <field name="name">cores.book.order.select</field>
+            <field name="model">cores.book.order</field>
+            <field name="arch" type="xml">
+                <search string="Search Booking Order">
+                    <field name="name" string="Name/Ref"/>
+                    <field name="order_date"/>
+                    <separator/>
+                    <filter icon="terp-check" string="Issued" domain="[('state','=','issue')]"/>
+                    <filter icon="terp-dolar_ok!" string="Done" domain="[('state','=','done')]" help="Booking Order done"/>
+                    <separator/>
+                    <filter string="My Booking Orders" domain="[('user_id','=',uid)]" help="My Booking Orders" icon="terp-personal" name="my_booking_orders_filter"/>
+                    <field name="user_id"/>
+               </search>
+            </field>
+        </record>
+
+
+    <record id="view_cores_book_order_tree" model="ir.ui.view">
+        <field name="name">cores.book.order.tree</field>
+        <field name="model">cores.book.order</field>
+        <field name="arch" type="xml">
+                <tree string="Book Orders" colors="grey:state=='done';blue:state=='issue';green:state=='draft'">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="order_date"/>
+                    <field name="state"/>
+                </tree>
+        </field>
+    </record>
+    
+        <record id="view_cores_book_order_form" model="ir.ui.view">
+            <field name="name">cores.book.order.form.view</field>
+            <field name="model">cores.book.order</field>
+            <field name="arch" type="xml">
+                <form string="Booking Order" version="7.0">
+                    <header>
+                       <button name="button_issue" states="draft" string="Issue" type="object"/>
+                       <button name="button_done" states="issue" string="Done" type="object"/>
+                       <field name="state" widget="statusbar" statusbar_visible="draft,issued,done" statusbar_colors='{"issue":"green","done":"red"}'/>
+                	</header>
+                <sheet>
+                    <h1>
+                        <label string="Booking Order "/>
+                        <field name="name" class="oe_inline" readonly="1"/>
+                    </h1>
+                    <group>
+                        <group>                        
+                            <field name="partner_id" required="1" domain="[('customer','=',True)]"/>
+                            <field name="order_date"/>
+                           </group>
+                        <group>
+                            <field name="user_id"/>
+                        </group>
+                    </group>   
+                    <notebook>
+                        <page string="Order Lines">
+		                <field name="order_lines">
+                                    <tree string="Order Lines" editable="bottom">
+		                         		 <field name="office_id" on_change="onchange_office_id(office_id, pricing, units)" options='{"always_reload": True}'/>
+		                          		 <field name="start_date"/>     
+		                         		 <field name="end_date"/>
+		                          		 <field name="pricing" on_change="onchange_office_id(office_id, pricing, units)" options='{"always_reload": True}'/>       
+		                         		 <field name="units" on_change="onchange_office_id(office_id, pricing, units)" options='{"always_reload": True}'/>
+		                          		 <field name="price" required="1"/>     
+                                    </tree>
+                                </field>
+                        </page> 
+                    </notebook>                
+                </sheet>
+                </form>
+            </field>
+        </record>
+        
+
+
+
+    <record id="action_cores_book_order" model="ir.actions.act_window">
+        <field name="name">All Booking Orders</field>
+        <field name="res_model">cores.book.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id"  ref="view_cores_book_order_filter"/>
+        <field name="context">{}</field>
+        <field name="help">Create new Booking Order.</field>
+    </record>
+    
+    
+    <menuitem action="action_cores_book_order"
+        id="menu_action_cores_book_order"
+        parent="cores_booking.menu_cores_office_ms" sequence="20"/>
+      
+
+    <record id="action_cores_book_order2" model="ir.actions.act_window">
+        <field name="name">New Booking Order</field>
+        <field name="res_model">cores.book.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="search_view_id"  eval="False"/>
+        <field name="context">{}</field>
+        <field name="help">Create new Booking Order.</field>
+    </record>
+    
+    
+    <menuitem action="action_cores_book_order2"
+        id="menu_action_cores_book_order2"
+        parent="cores_booking.menu_cores_office_ms" sequence="1"/>
+
+
+
+
+    </data>
+</openerp>
+

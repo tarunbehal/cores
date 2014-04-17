@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+       <menuitem id="menu_tarun_products_management" name="Products"
+            parent="base.menu_tarun_hms_root" sequence="20" />
+
+        <record id="view_tarun_hotel_product_filter" model="ir.ui.view">
+            <field name="name">tarun.hotel.product.select</field>
+            <field name="model">tarun.hotel.product</field>
+            <field name="arch" type="xml">
+                <search string="Search Products">
+                    <field name="name" string="Name"/>
+                    <field name="default_code" string="Reference"/>
+                    <separator/>
+                    <filter icon="terp-check" string="Alert" domain="[('alert','ilike','!!!')]"/>
+                    <separator/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Category" icon="terp-personal" domain="[]" context="{'group_by':'product_category'}"/>
+                    </group>
+               </search>
+            </field>
+        </record>
+
+            
+    <record id="view_tarun_hotel_product_tree" model="ir.ui.view">
+        <field name="name">tarun.hotel.product.tree</field>
+        <field name="model">tarun.hotel.product</field>
+        <field name="arch" type="xml">
+            <tree string="Products" colors="red:alert_bol==True;green:alert_bol==False">
+                <field name="default_code"/>
+		        <field name="name"/>
+		        <field name="unit"/> 
+		        <field name="product_uom"/>   
+		        <field name="value"/>         
+		        <field name="product_category" invisible="1"/>  
+		        <field name="total_stock"/>  
+		        <field name="alert"/>        
+		        <field name="alert_bol" invisible="1"/>         
+            </tree>
+        </field>
+    </record>
+    
+        <record id="view_tarun_hotel_product_form" model="ir.ui.view">
+            <field name="name">tarun.hotel.product.form.view</field>
+            <field name="model">tarun.hotel.product</field>
+            <field name="arch" type="xml">
+                <form string="Products" version="7.0">
+                	<sheet>
+                    	<div class="oe_title">
+                            <div class="oe_edit_only">
+                                <label for="name" string="Product Name"/>
+                            </div>
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                            <label for="product_category" class="oe_edit_only"/>
+                            <h2><field name="product_category" widget="selection"/></h2>
+                        </div>
+                        <div class="oe_right oe_button_box" name="buttons">
+                        </div>
+                       <group>
+                       <group>
+		        <field name="default_code"/> 
+                       <label for="product_uom"/>
+                            <div>
+		                <field name="unit" class="oe_inline"/> 
+		                <field name="product_uom" class="oe_inline" widget="selection"/>
+                            </div> 
+                        </group>
+                       <group>
+		        <field name="value"/>
+		        <field name="stock_alert"/>   
+		        <field name="active"/>   
+                        </group>
+                        </group>
+					</sheet>   
+                </form>
+            </field>
+        </record>
+
+
+    <record id="action_tarun_hotel_product" model="ir.actions.act_window">
+        <field name="name">Products</field>
+        <field name="res_model">tarun.hotel.product</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id"  ref="view_tarun_hotel_product_filter"/>
+        <field name="context">{}</field>
+        <field name="help">Create new Product.</field>
+    </record>
+    
+
+
+    
+    <menuitem action="action_tarun_hotel_product"
+        id="menu_action_tarun_hotel_product"
+        parent="tarun_hotel_ms.menu_tarun_products_management" sequence="20"/>
+
+
+
+
+        <act_window
+            context="{'search_default_done': 1,'search_default_product_id': [active_id], 'default_product_id': active_id}"
+            id="act_product_stock_move_open"
+            name="Product History"
+            res_model="tarun.hotel.stock.transfer"
+            src_model="tarun.hotel.product"/>
+
+
+    
+<!--Product Category Related info-->
+    <record id="view_tarun_hotel_product_category_tree" model="ir.ui.view">
+        <field name="name">tarun.hotel.product.category.tree</field>
+        <field name="model">tarun.hotel.product.category</field>
+        <field name="arch" type="xml">
+            <tree string="Products Category">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    
+        <record id="view_tarun_hotel_product_category_form" model="ir.ui.view">
+            <field name="name">tarun.hotel.product.category.form.view</field>
+            <field name="model">tarun.hotel.product.category</field>
+            <field name="arch" type="xml">
+                <form string="Products Category" version="7.0">
+                    <group col="4">
+		                <field name="name"/>          
+                    </group> 
+                </form>
+            </field>
+        </record>
+
+
+    <record id="action_tarun_hotel_product_category" model="ir.actions.act_window">
+        <field name="name">Products Category</field>
+        <field name="res_model">tarun.hotel.product.category</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id"  eval="False"/>
+        <field name="context">{}</field>
+        <field name="help">Create new Product Category.</field>
+    </record>
+
+    
+    
+    <menuitem action="action_tarun_hotel_product_category"
+        id="menu_action_tarun_hotel_product_category"
+        parent="tarun_hotel_ms.menu_tarun_products_management" sequence="20"/>
+
+
+<!--Stock Transactions Related info-->
+
+
+        <record id="view_tarun_hotel_stock_transfer_search" model="ir.ui.view">
+            <field name="name">tarun.hotel.stock.transfer.search</field>
+            <field name="model">tarun.hotel.stock.transfer</field>
+            <field eval="3" name="priority"/>
+            <field name="arch" type="xml">
+                <search string="Stock Transactions">
+                    <field name="date" groups="base.group_no_one"/>
+                    <filter icon="terp-dialog-close" string="Done" name="done" domain="[('state','=','done')]" help="Stock moves that have been processed"/>
+                    <separator/>
+                    <filter icon="terp-go-today" string="Today" domain="[('date','&lt;=',time.strftime('%%Y-%%m-%%d 23:59:59')),('date','&gt;=',time.strftime('%%Y-%%m-%%d 00:00:00'))]" help="Orders processed Today or planned for Today"/>
+                    <field name="product_id"/>
+                    <field name="name" string="Location" filter_domain="['|',('loc_id','ilike',self),('loc_dest_id','ilike',self)]"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Product" name="by_product" icon="terp-accessories-archiver" domain="[]"  context="{'group_by':'product_id'}"/>
+                        <filter icon="terp-stock_effects-object-colorize" string="Status" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="Creation" name="groupby_create_date" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+    <record id="view_tarun_hotel_stock_transfer_tree" model="ir.ui.view">
+        <field name="name">tarun.hotel.stock.transfer.tree</field>
+        <field name="model">tarun.hotel.stock.transfer</field>
+        <field name="arch" type="xml">
+			<tree string="Stock Transactions" editable="bottom">
+		        <field name="name"/>
+		        <field name="product_id" readonly="1"/> 
+                <field name="qty" readonly="1"/>
+		        <field name="loc_id" readonly="1"/>   
+		        <field name="loc_des_id" readonly="1"/>         
+		        <field name="date" readonly="1"/>     
+		        <field name="state"/>         
+		        <field name="user_id"/>     
+            </tree>
+        </field>
+    </record>
+    
+        <record id="view_tarun_hotel_stock_transfer_form" model="ir.ui.view">
+            <field name="name">tarun.hotel.stock.transfer.form.view</field>
+            <field name="model">tarun.hotel.stock.transfer</field>
+            <field name="arch" type="xml">
+                <form string="Stock Transactions" version="7.0">
+                <button name="button_done" string="Process" type="object" attrs="{'invisible': [('state','in',('done','cancel'))]}" class="oe_highlight"/> 
+                <button name="button_cancel" string="Cancel" type="object" attrs="{'invisible': [('state','in',('cancel','done'))]}" class="oe_highlight"/> 
+                    <group col="4">
+                <field name="qty" attrs="{'readonly': [('state','in',('cancel','done'))]}"/>
+		        <field name="name" attrs="{'readonly': [('state','in',('cancel','done'))]}"/>
+		        <field name="product_id" attrs="{'readonly': [('state','in',('cancel','done'))]}"/> 
+		        <field name="loc_id" attrs="{'readonly': [('state','in',('cancel','done'))]}"/>   
+		        <field name="loc_des_id" attrs="{'readonly': [('state','in',('cancel','done'))]}"/>         
+		        <field name="date" attrs="{'readonly': [('state','in',('cancel','done'))]}"/>     
+		        <field name="state"/>         
+		        <field name="user_id"/>             
+                    </group> 
+                </form>
+            </field>
+        </record>
+
+
+    <record id="action_tarun_hotel_stock_transfer" model="ir.actions.act_window">
+        <field name="name">Stock History</field>
+        <field name="res_model">tarun.hotel.stock.transfer</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_tarun_hotel_stock_transfer_search"/>
+        <field name="context">{}</field>
+        <field name="help">Stock Transactions.</field>
+    </record>
+
+    
+    
+    <menuitem action="action_tarun_hotel_stock_transfer"
+        id="menu_action_tarun_hotel_stock_transfer"
+        parent="tarun_hotel_ms.menu_tarun_products_management" sequence="20"/>
+
+<!--inv trial-->
+
+
+        <record id="tarun_hotel_update_stock_lines_tree" model="ir.ui.view">
+            <field name="name">tarun.hotel.update.stock.lines.tree</field>
+            <field name="model">tarun.hotel.update.stock.lines</field>
+            <field name="arch" type="xml">
+                <tree string="Stock Update Lines">
+                    <field name="product_id"/>
+                    <field name="cur_qty"/>
+                    <field name="qty"/>
+                </tree>
+            </field>
+        </record>
+        <record id="tarun_hotel_update_stock_lines_form" model="ir.ui.view">
+            <field name="name">tarun.hotel.update.stock.lines.form</field>
+            <field name="model">tarun.hotel.update.stock.lines</field>
+            <field name="arch" type="xml">
+                <form string="Stock Update Lines" version="7.0">
+                    <group col="4">
+                    <field name="product_id"/>
+                    <field name="cur_qty"/>
+                    <field name="qty"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="tarun_hotel_update_stock_tree" model="ir.ui.view">
+            <field name="name">tarun.hotel.update.stock.tree</field>
+            <field name="model">tarun.hotel.update.stock</field>
+            <field name="arch" type="xml">
+                <tree string="Lot Inventory" colors="grey:state == 'cancel'">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tarun_hotel_update_stock_form" model="ir.ui.view">
+            <field name="name">tarun.hotel.update.stock.form</field>
+            <field name="model">tarun.hotel.update.stock</field>
+            <field name="arch" type="xml">
+                <form string="Physical Inventory" version="7.0">
+                <header>
+                    <button name="button_done" states="draft" string="Validate Inventory" type="object" class="oe_highlight"/>
+                    <button name="button_cancel" states="draft" string="Cancel" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="e.g. Annual inventory"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                    <page string="General Information">
+                        <field name="inv_lines">
+                            <tree string="Products" editable="bottom">
+                                <field name="product_id" readonly="1"/>
+                                <field name="cur_qty"/>
+                                <field name="qty"/>
+                            </tree>
+                            <form string="Products" version="7.0">
+                                <group>
+				                    <field name="product_id" readonly="1"/>
+				                    <field name="qty"/>
+				                    <field name="cur_qty"/>
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_tarun_hotel_update_stock_form" model="ir.actions.act_window">
+            <field name="name">Physical Inventories</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tarun.hotel.update.stock</field>
+            <field name="view_type">form</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to start an inventory. 
+              </p><p>
+                Periodical Inventories are used to count the number of products
+                available per location. You can use it once a year when you do
+                the general inventory or whenever you need it, to adapt the
+                current inventory level of a product.
+              </p>
+            </field>
+        </record>
+        <menuitem action="action_tarun_hotel_update_stock_form" id="menu_action_tarun_hotel_update_stock_form" parent="tarun_hotel_ms.menu_tarun_products_management" sequence="30"/>
+
+
+
+
+
+    </data>
+</openerp>
+

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Asylum dashboard -->
+        <record id="action_active_booking_order" model="ir.actions.act_window">
+            <field name="name">Booking Orders</field>
+            <field name="res_model">tarun.hotel.book.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state','=','cin')]</field>
+            <field name="context">{'group_by':['room_id_view']}</field>
+            <field name="view_id" ref="tarun_hotel_ms.view_tarun_hotel_book_order_tree"/>
+        </record>
+        
+        <record id="action_active_room_list" model="ir.actions.act_window">
+            <field name="name">Room List</field>
+            <field name="res_model">tarun.hotel.room</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+            <field name="context">{'group_by':['type_id']}</field>
+            <field name="view_id" ref="tarun_hotel_ms.view_tarun_hotel_room_tree"/>
+        </record>
+        
+        
+        <record id="action_view_active_occupancy" model="ir.actions.act_window">
+            <field name="name">Room Occupancy</field>
+            <field name="res_model">tarun.hotel.occ</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="view_id" ref="tarun_hotel_ms.view_tarun_hotel_occ_tree"/>
+        </record>
+
+
+        <record id="board_juliant_form" model="ir.ui.view">
+            <field name="name">board.asylum.form</field>
+            <field name="model">board.board</field>
+            <field name="arch" type="xml">
+                <form string="All Bookings" version="7.0">
+                    <board style="2-1">
+                        <column>
+                            <action name="%(action_active_booking_order)d" string="Active Booking Orders"/>
+                            <action name="%(action_active_room_list)d" string="Rooms"/>
+                            <action name="%(action_view_active_occupancy)d" string="Room Occupancy"/>
+                        </column>
+                    </board>
+                </form>
+            </field>
+        </record>
+
+        <record id="open_board_hotel" model="ir.actions.act_window">
+            <field name="name">Booking Orders</field>
+            <field name="res_model">board.board</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="board_juliant_form"/>
+        </record>
+
+        <menuitem id="menu_dashboard_hotel"
+                  sequence="15"
+                  parent="base.menu_reporting_dashboard"
+                  action="open_board_hotel"/>
+                  
+        <!-- inside booking order view-->          
+        <menuitem id="menu_dashboard_hotel2"
+                  sequence="15"
+                  parent="tarun_hotel_ms.menu_tarun_hms_management"
+                  action="open_board_hotel"/>
+
+    </data>
+</openerp>

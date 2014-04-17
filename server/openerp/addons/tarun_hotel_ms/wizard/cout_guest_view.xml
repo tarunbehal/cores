@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        
+        <!--  CheckOut Guest -->
+        
+        <record id="view_tarun_cout_guest_wizard" model="ir.ui.view">
+            <field name="name">Guest Checkout</field>
+            <field name="model">tarun.cout.guest</field>
+            <field name="arch" type="xml">
+                <form string="Check-Out Guest" version="7.0">
+                    <group>
+                        <separator string="Are you sure you want to checkout this Guest?." colspan="4"/>
+                    </group>
+                    <footer>
+                        <button name="cout_guest" string="Approve"
+                            colspan="1" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />    
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_tarun_cout_guest" model="ir.actions.act_window">
+            <field name="name">Guest Check Out</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tarun.cout.guest</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>            
+        </record>
+       
+       
+    </data>
+</openerp>    

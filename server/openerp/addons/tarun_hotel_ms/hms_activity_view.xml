@@ -1,0 +1,363 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+
+    <!-- HMS Activitys Types Form View -->
+
+    <record id="view_tarun_hotel_activity_type_tree" model="ir.ui.view">
+        <field name="name">Activity Types Tree</field>
+        <field name="model">tarun.hotel.activity.type</field>
+        <field name="arch" type="xml">
+            <tree string="Activity Types" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_tarun_hotel_activity_type" model="ir.actions.act_window">
+        <field name="name">Activity Types</field>
+        <field name="res_model">tarun.hotel.activity.type</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="view_tarun_hotel_activity_type_tree"/>
+    </record>
+
+    <menuitem id="menu_tarun_hotel_activity_type" parent="tarun_hotel_ms.menu_tarun_hms_config" sequence="100"
+        action="action_tarun_hotel_activity_type"/>
+
+    <!-- HMS Activitys Lines Form View -->
+
+    
+    <record id="view_tarun_hotel_activity_line_tree" model="ir.ui.view">
+        <field name="name">tarun.hotel.activity.line.tree</field>
+        <field name="model">tarun.hotel.activity.line</field>
+        <field name="arch" type="xml">
+            <tree string="Activity Lines">
+                <field name="name"/>
+		                <field name="activity_id"/>
+		                <field name="guest_id"/> 
+		                <field name="state"/>    
+                <field name="type"/>
+		                <field name="group_id"/>
+		                <field name="user_id"/>      
+            </tree>
+        </field>
+    </record>
+    
+        <record id="view_tarun_hotel_activity_line_form" model="ir.ui.view">
+            <field name="name">tarun.hotel.activity.line.view</field>
+            <field name="model">tarun.hotel.activity.line</field>
+            <field name="arch" type="xml">
+                <form string="Activity Lines" version="7.0">
+                <field name="name"/>
+		                <field name="activity_id"/>
+		                <field name="guest_id"/> 
+		                <field name="state"/>    
+                <field name="type"/>
+		                <field name="group_id"/>
+		                <field name="user_id"/>  
+                </form>
+            </field>
+        </record>
+
+
+    <record id="action_tarun_hotel_activity_line" model="ir.actions.act_window">
+        <field name="name">Activity Lines</field>
+        <field name="res_model">tarun.hotel.activity.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id"  eval="False"/>
+        <field name="context">{}</field>
+        <field name="help">Create new Activity Line.</field>
+    </record>
+    
+    
+    <menuitem action="action_tarun_hotel_activity_line"
+        id="menu_action_tarun_hotel_activity_line"
+        parent="tarun_hotel_ms.menu_tarun_hms_activities" sequence="20"/>
+
+
+    <!-- Activitys Form View -->
+
+    <record model="ir.ui.view" id="view_tarun_hotel_activity_form">
+        <field name="name">HMS - Activitys Form</field>
+        <field name="model">tarun.hotel.activity</field>
+        <field name="arch" type="xml">
+            <form string="Activitys" version="7.0">
+                <field name="state" invisible="True"/>
+                <sheet>
+                    <div class="oe_title">
+                        <div class="oe_edit_only">
+                            <label for="name"/>
+                        </div>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                        <label for="partner_ids" class="oe_edit_only"/>
+                        <h2>
+                            <field name="partner_ids" widget="many2many_tags"
+                                context="{'force_email':True}"
+                                on_change="onchange_partner_ids(partner_ids)"/>
+                        </h2>
+                    </div>
+                    <notebook>
+                    <page string="Activity Details">
+                        <group>
+                            <group>
+                                <field name="date" string="Starting at"
+                                    on_change="onchange_dates(date, duration, False, allday)"/>
+                                <label for="duration"/>
+                                <div>
+                                    <field name="duration" widget="float_time"
+                                        on_change="onchange_dates(date,duration,False,allday)"
+                                        class="oe_inline" attrs="{'invisible': [('allday','=',True)]}"/>
+                                    <label string="hours" attrs="{'invisible': [('allday','=',True)]}"/>
+                                    (<field name="allday" on_change="onchange_dates(date,False,False,allday)" class="oe_inline"/>
+                                    <label for="allday" string="All Day?"/>)
+                                </div>
+                                <field name="date_deadline" groups="base.group_no_one"
+                                    attrs="{'invisible': ['|', ('allday','=',True), ('duration','&lt;', 24)]}"
+                                    on_change="onchange_dates(date,False,date_deadline)"/>
+                            </group>
+                            <group>
+                                <field name="activity_type"/>
+                                <field name="activity_group"/>
+                                <field name="max_people"/>
+                                <field name="current_count"/>
+                                <field name="user_id" groups="base.group_no_one"/>
+                            </group>
+
+                        </group>
+                        <label for="description"/>
+                        <field name="description"/>
+                    </page>
+                    <page string="Options">
+                        <group>
+                            <group col="1">
+                                <group>
+                                    <field name="recurrency"/>
+                                </group>
+                                <group attrs="{'invisible': [('recurrency','=',False)]}">
+                                    <label for="interval"/>
+                                    <div>
+                                        <field name="interval" attrs="{'required': [('recurrency','==',True)]}" class="oe_inline"/>
+                                        <field name="rrule_type" attrs="{'required': [('recurrency','==',True)]}" class="oe_inline"/>
+                                    </div>
+                                    <label string="Until" for="end_type"/>
+                                    <div>
+                                        <field name="end_type" attrs="{'required': [('recurrency','==',True)]}" class="oe_inline"/>
+                                        <field name="count" attrs="{'invisible': [('end_type', '!=', 'count')], 'required': [('recurrency','==',True)]}" class="oe_inline"/>
+                                        <field name="end_date" attrs="{'invisible': [('end_type', '!=', 'end_date')], 'required': [('end_type', '=', 'end_date')]}" class="oe_inline"/>
+                                    </div>
+                                    <label string="Select Weekdays" attrs="{'invisible' :[('rrule_type','not in', ['weekly'])]}"/>
+                                    <group col="2" colspan="1" name="weekdays" attrs="{'invisible' :[('rrule_type','not in', ['weekly'])]}">
+                                        <field name="mo"/>
+                                        <field name="tu"/>
+                                        <field name="we"/>
+                                        <field name="th"/>
+                                        <field name="fr"/>
+                                        <field name="sa"/>
+                                        <field name="su"/>
+                                    </group>
+
+                                    <label string="Day of Month"
+                                        attrs="{'invisible': [('rrule_type','!=','monthly')]}"/>
+
+                                    <div attrs="{'invisible': [('rrule_type','!=','monthly')]}">
+                                        <field name="select1"/>
+                                        <field name="day"
+                                            attrs="{'required': [('select1','=','date'), ('rrule_type','=','monthly')],
+                                                'invisible': [('select1','=','day')]}"/>
+                                        <field name="byday" string="The"
+                                            attrs="{'required': [('select1','=','day'), ('rrule_type','=','monthly')], 'invisible': [('select1','=','date')]}"/>
+                                        <field name="week_list" nolabel="1"
+                                            attrs="{'required': [('select1','=','day'), ('rrule_type','=','monthly')], 'invisible': [('select1','=','date')]}"/>
+                                    </div>
+
+                                </group>
+                            </group>
+                            <group>
+                                <field name="alarm_id" widget="selection" groups="base.group_no_one"/>
+                                <field name="class"/>
+                                <field name="show_as"/>
+                                <field name="rrule" invisible="1" readonly="1"/>
+                                <field name="recurrent_id_date" invisible="1"/>
+                                <field name="recurrent_id" invisible="1"/>
+                            </group>
+                        </group>
+                    </page>
+                    <page string="Invitations">
+                        <field name="attendee_ids" widget="one2many" mode="tree">
+                            <tree string="Invitation details" editable="top">
+                                <field name="partner_id" on_change="onchange_partner_id(partner_id)"/>
+                                <field name="email" string="Mail To"/>
+                                <field name="state"/>
+                                <button name="do_tentative"
+                                    states="needs-action,declined,accepted"
+                                    string="Uncertain" type="object"
+                                    icon="terp-HMS"/>
+                                <button name="do_accept" string="Accept"
+                                    states="needs-action,tentative,declined"
+                                    type="object" icon="gtk-apply"/>
+                                <button name="do_decline" string="Decline"
+                                    states="needs-action,tentative,accepted"
+                                    type="object" icon="gtk-cancel"/>
+                            </tree>
+                            <form string="Invitation details" version="7.0">
+                                <header>
+                                    <button name="do_tentative" type="object"
+                                        states="needs-action,declined,accepted"
+                                        string="Uncertain"/>
+                                    <button name="do_accept" type="object"
+                                        states="needs-action,tentative,declined"
+                                        string="Accept"/>
+                                    <button name="do_decline" type="object"
+                                        states="needs-action,tentative,accepted"
+                                        string="Decline"/>
+                                    <field name="state" widget="statusbar" statusbar_visible="draft,open,done"/>
+                                </header>
+                                <group>
+                                    <group>
+                                        <field name="email"/>
+                                        <field name="rsvp"/>
+                                        <field name="cutype"/>
+                                        <field name="role"/>
+                                    </group>
+                                    <group>
+                                        <field name="partner_id"/>
+                                        <field name="user_id"/>
+                                    </group>
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    
+                    <page string="Activity Lines">
+                            <field name="activity_line">
+                                <tree string="Activity Lines" editable="bottom">
+                                    <field name="state" invisible="1"/>
+                                    <field name="guest_id"/>
+                                    <field name="name"/>
+                                    <field name="type"/>
+                                    <field name="group_id"/>
+                                    <field name="user_id"/>
+                                </tree>
+                            </field>
+                        </page>                    
+
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- HMS Activity Tree View  -->
+
+    <record model="ir.ui.view" id="view_tarun_hotel_activity_tree">
+        <field name="name">HMS - Activitys Tree</field>
+        <field name="model">tarun.hotel.activity</field>
+        <field name="arch" type="xml">
+            <tree string="Activitys" fonts="bold:message_unread==True">
+                <field name="name" string="Subject"/>
+                <field name="user_id"/>
+                <field name="date"/>
+                <field name="state" invisible="True"/>
+                <field name="duration"/>
+                <field name="message_unread" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- HMS Activity Calendar -->
+
+    <record model="ir.ui.view" id="view_tarun_hotel_activity_calendar">
+        <field name="name">HMS - Activitys Calendar</field>
+        <field name="model">tarun.hotel.activity</field>
+        <field name="priority" eval="2"/>
+        <field name="arch" type="xml">
+            <calendar string="Activitys" date_start="date" color="user_id" date_stop="date_deadline" date_delay="duration">
+                <field name="name"/>
+                <field name="user_id"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- HMS Activity Gantt  -->
+
+    <record id="view_tarun_hotel_activity_gantt" model="ir.ui.view">
+        <field name="name">HMS - Activitys Gantt</field>
+        <field name="model">tarun.hotel.activity</field>
+        <field name="arch" type="xml">
+            <gantt date_delay="duration" date_start="date" string="Activitys"/>
+        </field>
+    </record>
+
+    <!-- HMS Activity Search View  -->
+
+    <record id="view_tarun_hotel_activity_search" model="ir.ui.view">
+        <field name="name">HMS - Activitys Search</field>
+        <field name="model">tarun.hotel.activity</field>
+        <field name="arch" type="xml">
+            <search string="Search Activitys">
+                <field name="name" string="Activity" filter_domain="[('name','ilike',self)]"/>
+                <filter string="Unread Messages" name="message_unread" domain="[('message_unread','=',True)]"/>
+                <separator/>
+                <filter string="My Activitys" help="My Activitys" domain="[('user_id','=',uid)]"/>
+                <field name="user_id"/>
+                <field name="partner_ids"/>
+            </search>
+        </field>
+    </record>
+
+
+    <!-- HMS Activitys action and menu -->
+
+    <record id="action_tarun_hotel_activity" model="ir.actions.act_window">
+        <field name="name">Activitys</field>
+        <field name="res_model">tarun.hotel.activity</field>
+        <field name="view_mode">calendar,tree,form,gantt</field>
+        <field name="view_id" ref="view_tarun_hotel_activity_calendar"/>
+        <field name="search_view_id" ref="view_tarun_hotel_activity_search"/>
+        <field name="context">{"calendar_default_user_id": uid}</field>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            Click to schedule a new Activity.
+          </p><p>
+            The calendar is shared between employees and fully integrated with
+            other applications such as the employee holidays or the business
+            opportunities.
+          </p>
+        </field>
+    </record>
+    <record model="ir.actions.act_window.view" id="action_view_tarun_hotel_activity_calendar">
+        <field name="act_window_id" ref="action_tarun_hotel_activity"/>
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">calendar</field>
+        <field name="view_id" ref="view_tarun_hotel_activity_calendar"/>
+    </record>
+    <record model="ir.actions.act_window.view" id="action_view_tarun_hotel_activity_tree">
+        <field name="act_window_id" ref="action_tarun_hotel_activity"/>
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_tarun_hotel_activity_tree"/>
+    </record>
+    <record model="ir.actions.act_window.view" id="action_view_tarun_hotel_activity_form">
+        <field name="act_window_id" ref="action_tarun_hotel_activity"/>
+        <field name="sequence" eval="3"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_tarun_hotel_activity_form"/>
+    </record>
+    <record model="ir.actions.act_window.view" id="action_view_tarun_hotel_activity_gantt">
+        <field name="act_window_id" ref="action_tarun_hotel_activity"/>
+        <field name="sequence" eval="4"/>
+        <field name="view_mode">gantt</field>
+        <field name="view_id" ref="view_tarun_hotel_activity_gantt"/>
+    </record>
+
+    <menuitem name="Activity Calendar"
+        id="mail_menu_view_tarun_hotel_activity" parent="tarun_hotel_ms.menu_tarun_hms_activities"
+        sequence="10" action="action_tarun_hotel_activity"/>
+        
+
+    </data>
+</openerp>

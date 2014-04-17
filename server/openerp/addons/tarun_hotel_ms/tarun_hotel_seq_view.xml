@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <!-- Sequences for hotel booking -->
+        <record id="seq_type_tarun_hotel_book_order" model="ir.sequence.type">
+            <field name="name">HMS Book Order</field>
+            <field name="code">tarun.hotel.book.order</field>
+        </record>
+
+        <record id="seq_tarun_hotel_book_order" model="ir.sequence">
+            <field name="name">HMS Book Order</field>
+            <field name="code">tarun.hotel.book.order</field>
+            <field name="prefix">BKN</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Sequences for hotel purchase -->
+        <record id="seq_type_tarun_hotel_purchase_order" model="ir.sequence.type">
+            <field name="name">HMS Purchase Order</field>
+            <field name="code">tarun.hotel.purchase</field>
+        </record>
+
+        <record id="seq_tarun_hotel_purchase_order" model="ir.sequence">
+            <field name="name">HMS Purchase Order</field>
+            <field name="code">tarun.hotel.purchase</field>
+            <field name="prefix">Ticket#</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</openerp>
