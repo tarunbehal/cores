@@ -570,28 +570,38 @@ class tarun_hotel_book_order(osv.osv):
             vals['guest_id'] = self.pool.get('tarun.hotel.guest.partner').create(cr, uid, val, context=context)
             dt_str = str(cur_date)+" 00:00:00"
             vals['check_in_date']=dt_str
-            vals['check_in_date_view']=cur_date
             vals['user_id']=uid              
             self.pool.get('tarun.hotel.guest.points').create(cr,uid,{'guest_id':vals['guest_id'],
                                                                      'name':'Check-In Points',
                                                                      'qty':3675,
                                                                      'date':dt_str,
                                                                      },context=context) 
-            print "date test", cur_date , dt_str
             return super(tarun_hotel_book_order, self).create(cr, uid, vals, context=context)
+
+    
+    def write(self, cr, uid, ids, vals, context=None):
+        cval = {}
+        if vals.get('check_in_date_view'):
+            cval['cin_date'] = vals.get('check_in_date_view') 
+            vals['check_in_date']=vals.get('check_in_date_view')+" 00:00:00"
+        if vals.get('first_name'):
+            cval['name'] = vals.get('first_name') 
+        if vals.get('last_name'):
+            cval['last_name'] = vals.get('last_name') 
+        if vals.get('gender'):
+            cval['gender'] = vals.get('gender')  
+        if vals.get('guest_ref'):
+            cval['guest_ref'] = vals.get('guest_ref')  
+        if vals.get('country_id'):
+            cval['country_id'] = vals.get('country_id') 
+        gid = self.read(cr,uid,ids,['guest_id'])[0]['id']
+        if gid:
+            self.pool.get('tarun.hotel.guest.partner').write(cr,uid,[gid],cval,context=context)
+        return super(tarun_hotel_book_order, self).write(cr, uid, ids, vals, context=context)
 
 
     def copy(self, cr, uid, id, default=None, context=None):
-        if not default:
-            default = {}
-        time_now = time.strftime('%Y-%m-%d %H:%M:%S')   
-        default.update({
-            'guest_id':None,
-            'state': 'cin',
-            'check_in_date': time_now,
-            'check_out_date': None,
-        })
-        return super(tarun_hotel_book_order, self).copy(cr, uid, id, default, context=context)
+        raise osv.except_osv(_('Warning!'), _('Copy Feature is diabled on Booking Order. \nPlease create a new booking order!\n Contact Administrator'))
     
     def onchange_partner_id(self, cr, uid, ids, part, context=None):
         if not part:
