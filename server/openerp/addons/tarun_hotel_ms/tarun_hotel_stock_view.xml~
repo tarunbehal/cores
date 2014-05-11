@@ -61,8 +61,7 @@
                         </div>
                        <group>
                        <group>
-		        <field name="default_code"/>  
-                        <field name="barcode"/> 
+		        <field name="default_code"/> 
                        <label for="product_uom"/>
                             <div>
 		                <field name="unit" class="oe_inline"/> 

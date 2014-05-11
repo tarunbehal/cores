@@ -112,6 +112,8 @@ class tarun_hotel_product(osv.osv):
         if name:
             ids = self.search(cr, user, [('default_code','=',name)]+ args, limit=limit, context=context)
             if not ids:
+                ids = self.search(cr, user, [('barcode','=',name)]+ args, limit=limit, context=context)
+            if not ids:
                 ids = set()
                 ids.update(self.search(cr, user, args + [('default_code',operator,name)], limit=limit, context=context))
                 if not limit or len(ids) < limit:
@@ -125,13 +127,14 @@ class tarun_hotel_product(osv.osv):
         else:
             ids = self.search(cr, user, args, limit=limit, context=context)
         fin = []
-        print context, context['positive_only']
-        tarun = great
-        
-        for prod in self.browse(cr, user, ids, context=context):
-            if prod.total_stock>0.0:
-                fin.append(prod.id)
-        result = self.name_get(cr, user, fin, context=context)
+        if context.get('positive_only',False):
+	    for prod in self.browse(cr, user, ids, context=context):
+                if prod.total_stock>0.0:
+	            fin.append(prod.id)
+        if fin:
+            result = self.name_get(cr, user, fin, context=context)
+        else:
+            result = self.name_get(cr, user, ids, context=context)
         return result
 
    

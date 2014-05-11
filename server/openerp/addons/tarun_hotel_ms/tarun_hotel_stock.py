@@ -79,6 +79,7 @@ class tarun_hotel_product(osv.osv):
     _columns = {
         'name': fields.char('Name', size=128, required=True, select=True),
         'default_code' : fields.char('Ref. Number', size=64, select=True),
+        'barcode' : fields.char('Barcode', size=64, select=True),
         'unit': fields.float('Unit'),
         'product_uom': fields.many2one('product.uom', 'Unit of Measure ', required=True),
         'value': fields.float('Value'),
@@ -111,6 +112,8 @@ class tarun_hotel_product(osv.osv):
             args = []
         if name:
             ids = self.search(cr, user, [('default_code','=',name)]+ args, limit=limit, context=context)
+            if not ids:
+                ids = self.search(cr, user, [('barcode','=',name)]+ args, limit=limit, context=context)
             if not ids:
                 ids = set()
                 ids.update(self.search(cr, user, args + [('default_code',operator,name)], limit=limit, context=context))
