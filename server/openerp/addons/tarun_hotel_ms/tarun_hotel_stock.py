@@ -103,7 +103,9 @@ class tarun_hotel_product(osv.osv):
             ids = [ids]
         res = []
         for record in self.browse(cr, uid, ids, context=context):
-            name = record.default_code+" "+record.name+" "+str(record.unit)+record.product_uom.name
+            name = record.name+" "+str(record.unit)+record.product_uom.name
+            if record.default_code:
+                name = record.default_code+" "+ name
             res.append((record.id, name))
         return res
 
