@@ -35,8 +35,11 @@ class tarun_hotel_purchase(osv.osv):
                         val = prod_obj.read(cr,uid,l[2]['product_id'],['value'])['value'] * l[2]['qty']
                         tot += val
         if partner_id:
-            bal =  guest_obj.read(cr,uid,partner_id,['points'])['points']
-        bal = bal-tot
+            pbal =  guest_obj.read(cr,uid,partner_id,['points'])['points']
+        else:
+            pbal =  0.0
+        
+        bal = pbal-tot
         return {'value': {'total': tot ,'balance': bal}}
 
     def _get_total(self, cr, uid, ids, field_name, arg, context=None):
@@ -89,6 +92,8 @@ class tarun_hotel_purchase(osv.osv):
                 sale = self.pool.get('tarun.hotel.stock.location').search(cr,uid,[('name','ilike','sale')])
             except:                
                 raise osv.except_osv(_('Location Error!'), _('Please create location name "Stock" and "Sale"! Contact Administrator'))
+            if do.balance <0.0:
+                raise osv.except_osv(_('Warning!'), _('Guest doesnot have enough points to process the order.!'))
             for lines in do.inv_lines:
                 self.pool.get('tarun.hotel.stock.transfer').create(cr,uid,{'name':do.name,
                                                                            'product_id':lines.product_id.id,
@@ -119,8 +124,10 @@ class tarun_hotel_purchase(osv.osv):
               
     def button_go_bill(self, cr, uid, ids, context=None):        
         for do in self.browse(cr, uid, ids, context=context):
+            tot = sum([l.pts for l in do.inv_lines])
+            pbal = do.guest_id.points 
             time_now = time.strftime('%Y-%m-%d %H:%M:%S')
-            return self.write(cr,uid,ids,{'state': 'bill','date': time_now,'total_final': do.total,'balance_final': do.balance,},context=context)
+            return self.write(cr,uid,ids,{'state': 'bill','date': time_now,'total_final': tot,'total': tot,'balance_final': do.guest_id.points-tot,'balance': do.guest_id.points-tot,},context=context)
         
     def button_back_bill(self, cr, uid, ids, context=None):        
         for do in self.browse(cr, uid, ids, context=context):
@@ -130,9 +137,10 @@ class tarun_hotel_purchase(osv.osv):
         'guest_id': fields.many2one('tarun.hotel.guest.partner', 'Guest Billing', select=True),
         'name': fields.char('Name', size=128, required=True, select=True),
         'total': fields.function(_get_total, string='Total', type='float'),
-        'balance': fields.function(_get_balance, string='Balance', type='float'),
+        #'balance': fields.function(_get_balance, string='Balance', type='float'),
         'total_final' : fields.float('Total'),
         'balance_final' : fields.float('Balance'),
+        'balance' : fields.float('Balance'),
         'date': fields.datetime('Date', help="Date.", required=True, select=True, readonly=True),
         'state': fields.selection([
             ('draft', 'Draft'),
@@ -193,7 +201,7 @@ class tarun_hotel_purchase_lines(osv.osv):
     _columns = {
         'inv_id': fields.many2one('tarun.hotel.purchase', 'INV'),
         'product_id': fields.many2one('tarun.hotel.product', 'Product'),
-        'pts_unit': fields.function(_get_pts_unit, string='Points', type='float'),
+        'pts_unit': fields.float('Points', digits=(14,3)),
         'pts': fields.function(_get_total_pts, string='Total Points', type='float'),
         'qty': fields.float('Quantity', digits=(14,3)),
     }
@@ -201,9 +209,10 @@ class tarun_hotel_purchase_lines(osv.osv):
     
     
     def create(self, cr, uid, vals, context=None):
-        print vals
         if not vals['product_id']:
             return True
+        if not vals.get('pts_unit',None):
+            vals['pts_unit'] = self.pool.get('tarun.hotel.product').read(cr,uid,vals['product_id'],['value'])['value']
         return super(tarun_hotel_purchase_lines, self).create(cr, uid, vals, context=context)
         
         
@@ -211,7 +220,7 @@ class tarun_hotel_purchase_lines(osv.osv):
         context = context or {}
         if not  partner_id:
             raise osv.except_osv(_('No Customer Defined !'), _('Please use Cashier Page,\n to initiate the order.'))
-        return {'value': {'qty':1,'product_id':product}}
+        return {'value': {'qty':1.00,'product_id':product}}
 
 
     def onchange_product_id(self, cr, uid, ids, product_id, qty, context=None):
@@ -222,14 +231,19 @@ class tarun_hotel_purchase_lines(osv.osv):
             return res
         else:
             for prod in self.pool.get('tarun.hotel.product').browse(cr,uid,[product_id]):
-		    if prod.total_stock < qty:
-		        warning_msg = _('Product %s has low stock. Are you sure you want to select this Product!!') % (prod.name)
-		        res.update({'warning': {
-					    'title': _('Warning'),
-					    'message': warning_msg,
-					    }
-					})
-            return res
+                if qty:
+                    if prod.total_stock < qty:
+                            warning_msg = _('Product %s has low stock. Are you sure you want to select this Product!!') % (prod.name)
+                            res.update({'warning': {
+        					    'title': _('Warning'),
+        					    'message': warning_msg,
+        					    }
+        					})
+                    return res
+                else:
+                    res['value']['qty']=1.00
+                    res['value']['pts_unit']=prod.value
+                    return res
     
 
 tarun_hotel_purchase_lines() 

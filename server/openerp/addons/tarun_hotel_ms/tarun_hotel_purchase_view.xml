@@ -74,11 +74,11 @@
                     </group>
                     <notebook>
                     <page string="General Information">
-                        <field name="inv_lines" on_change="order_lines_change(inv_lines)">
+                        <field name="inv_lines" on_change="order_lines_change(inv_lines, guest_id)">
                             <tree string="Products" editable="bottom">
                                 <field name="product_id" on_change="onchange_product_id(product_id, qty)" context="{'positive_only':True}"/>
                                 <field name="qty" on_change="onchange_product_id(product_id, qty)" context="{'positive_only':True}"/>
-                                <field name="pts_unit"/>
+                                <field name="pts_unit" readonly="1"/>
                                 <field name="pts"/>
                             </tree>
                             <form string="Products" version="7.0">
@@ -98,7 +98,7 @@
                         <field name="balance_final" attrs="{'invisible': [('state','not in',('done'))]}" readonly="1"/>
                             </group>
                             <group>
-                    <button name="button_update" states="draft" string="Update Bill" type="object"/>
+                    <button name="button_update" states="draft" string="Update Bill" type="object" invisible="1"/>
                     <button name="button_go_bill" states="draft" string="Finish Billing" type="object" class="oe_highlight"/>
                     <button name="button_back_bill" states="bill" string="Back" type="object"/>
                     <button name="button_done_bill" states="bill" string="Charge and Print Ticket" type="object" class="oe_highlight"/> 
