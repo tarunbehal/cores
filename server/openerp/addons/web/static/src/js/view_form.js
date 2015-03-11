@@ -242,7 +242,7 @@ instance.web.FormView = instance.web.View.extend(instance.web.form.FieldManagerM
         // clear timeout, if any
         this.widgetFocused();
         this.__blur_timeout = setTimeout(function () {
-            self.trigger('blurred');
+           self.trigger('blurred');
         }, 0);
     },
 
@@ -602,9 +602,15 @@ instance.web.FormView = instance.web.View.extend(instance.web.form.FieldManagerM
                     });
                 }
                 var defs = [];
+                var _tsFld=null;
                 _.each(self.fields, function(field) {
-                    defs.push(field.commit_value());
+                    _tsFld=field;
+                    defs.push($.when(false));
+                    //defs.push(field.commit_value());
                 });
+                if (_tsFld!=null)
+                    _tsFld.commit_value();
+                
                 var args = _.toArray(arguments);
                 return $.when.apply($, defs).then(function() {
                     if (self.on_change_list.length !== 0) {
@@ -982,6 +988,7 @@ instance.web.FormView = instance.web.View.extend(instance.web.form.FieldManagerM
         return id ? [id] : [];
     },
     recursive_save: function() {
+        console.log('save in form');
         var self = this;
         return $.when(this.save()).then(function(res) {
             if (self.dataset.parent_view)
@@ -3735,6 +3742,7 @@ instance.web.form.FieldOne2Many = instance.web.form.AbstractField.extend({
                 return commands['delete'](x.id);}));
     },
     commit_value: function() {
+        //console.log('commit_value');
         return this.save_any_view();
     },
     save_any_view: function() {
@@ -3748,6 +3756,7 @@ instance.web.form.FieldOne2Many = instance.web.form.AbstractField.extend({
                 }
                 return $.when(view.save());
             } else if (this.viewmanager.active_view === "list") {
+                //console.log('save_any_view');
                 return $.when(view.ensure_saved());
             }
         }
@@ -3935,6 +3944,7 @@ instance.web.form.One2ManyListView = instance.web.ListView.extend({
         }
         var parent_form = this.o2m.view;
         var self = this;
+        console.log('do_button_action');
         this.ensure_saved().then(function () {
             if (parent_form)
                 return parent_form.save();
@@ -3976,6 +3986,7 @@ instance.web.form.One2ManyListView = instance.web.ListView.extend({
      * Makes the internal form go away
      */
     _on_form_blur: function () {
+        console.log('_on_form_blur');
         if (this.__ignore_blur) {
             this.__ignore_blur = false;
             return;
@@ -4060,6 +4071,7 @@ instance.web.form.One2ManyList = instance.web.ListView.List.extend({
                         clearTimeout(self.view.editor.form.__blur_timeout);
                         self.view.editor.form.__blur_timeout = false;
                     }
+                    console.log('Add an item');
                     self.view.ensure_saved().done(function () {
                         self.view.do_add_record();
                     });
